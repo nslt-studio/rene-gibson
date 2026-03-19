@@ -13,23 +13,29 @@ export function initHome(nav) {
       ch => `<span style="opacity:0;transition:opacity 150ms ease">${ch}</span>`
     ).join('');
     headline.style.opacity = '1';
-    revealHeadline = () => {
+    revealHeadline = (onDone) => {
       const spans = [...headline.querySelectorAll('span')];
       spans.forEach((span, i) => {
         setTimeout(() => { span.style.opacity = '1'; }, i * 8);
       });
-      setTimeout(() => { headline.textContent = originalText; }, (spans.length - 1) * 10 + 150);
+      const done = (spans.length - 1) * 8 + 150;
+      setTimeout(() => {
+        headline.textContent = originalText;
+        if (onDone) onDone();
+      }, done);
     };
   }
 
-  function onReady() {
+function onReady() {
     video.style.opacity = '1';
     video.play();
-    if (nav) setTimeout(() => { nav.openNav(); revealHeadline(); }, 300);
-    setTimeout(() => {
-      video.style.filter    = 'blur(0px)';
-      video.style.transform = 'scale(1)';
-    }, 1500);
+    if (nav) setTimeout(() => {
+      nav.openNav();
+      revealHeadline(() => {
+        video.style.filter    = 'blur(0px)';
+        video.style.transform = 'scale(1)';
+      });
+    }, 300);
   }
 
   if (video.readyState >= 2) {
